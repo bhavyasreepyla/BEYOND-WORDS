@@ -10,6 +10,9 @@ Features
 - Text-to-Speech Conversion: Employs NLP techniques to convert recognized gestures into spoken words, aiding communication for individuals with hearing impairments.
 - User Interface: Provides an intuitive graphical interface for interacting with the system and visualizing gesture recognition results(using streamlit).
 
+Dataset
+https://www.kaggle.com/datasets/grassknoted/asl-alphabet
+
 Setup
 Prerequisites
 - Python 3.x
