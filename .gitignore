@@ -1,0 +1,5 @@
+data/
+split_data/
+*.h5
+*.keras
+__pycache__/

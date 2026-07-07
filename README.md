@@ -16,11 +16,15 @@ https://www.kaggle.com/datasets/grassknoted/asl-alphabet
 Setup
 Prerequisites
 - Python 3.x
-- TensorFlow
-- OpenCV
-- NumPy
-- Matplotlib
-- SpeechRecognition (for text-to-speech functionality)
+- Install the dependencies with: pip install -r requirements.txt
+
+Pipeline
+
+1. Download the Kaggle grassknoted/asl-alphabet dataset and extract it into a `data/` folder, so the training images are in `data/asl_alphabet_train/` (and the test images in `data/asl_alphabet_test/`).
+2. Run `Extraction_Distribution_Splitting.py` to explore the dataset (sample images, class distribution) and split it into train/val/test folders under `split_data/`.
+3. Run `train_model.py` to train the MobileNetV2 classifier. It saves the trained model as `asl_mobilenetv2.keras`.
+4. Run `realtime_inference.py` to recognize ASL letters live from your webcam (press ESC to quit).
+5. Run `streamlit run text_to_speech_app.py` for the text-to-speech interface.
 
 Usage
 
@@ -39,3 +43,6 @@ Contributing
 
 Contributions are welcome! Feel free to fork this repository and submit pull requests with your enhancements or bug fixes.
 
+Acknowledgments
+
+The webcam region-of-interest and background-subtraction hand segmentation approach used in `realtime_inference.py` was adapted from a DataFlair hand sign recognition tutorial.

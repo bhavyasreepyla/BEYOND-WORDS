@@ -1,0 +1,10 @@
+tensorflow
+opencv-python
+numpy
+pandas
+matplotlib
+seaborn
+split-folders
+streamlit
+pyttsx3
+scikit-learn
