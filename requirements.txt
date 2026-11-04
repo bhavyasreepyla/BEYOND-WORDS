@@ -1,0 +1,15 @@
+# app
+mediapipe>=0.10.30
+opencv-python>=4.9
+numpy>=1.26
+onnxruntime>=1.17
+pillow>=10.1
+pyttsx3>=2.90
+
+# training + tests
+scikit-learn>=1.4
+torch>=2.2
+pyarrow>=15
+huggingface_hub>=0.23
+kagglehub>=0.3
+pytest>=8

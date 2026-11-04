@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beyond Words</title>
+  <meta name="description" content="Sign ASL to your webcam and hear it spoken: everyday word signs plus fingerspelling, live in your browser.">
+  <meta name="theme-color" content="#100C16">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23FFB547'/><stop offset='1' stop-color='%23FF5D8F'/></linearGradient></defs><rect width='32' height='32' rx='9' fill='%23100C16'/><path d='M8 22c4-10 12-14 16-12' stroke='url(%23g)' stroke-width='4' fill='none' stroke-linecap='round'/></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.wasm.min.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="mark" href="./" aria-label="Beyond Words">beyond<b>words</b></a>
+
+    <div class="modes" role="radiogroup" aria-label="Recognition mode">
+      <button role="radio" aria-checked="true" data-mode="words">Words</button>
+      <button role="radio" aria-checked="false" data-mode="spell">Spell</button>
+    </div>
+
+    <div class="bar-tools">
+      <button class="chip-btn" id="vocab-open">Signs</button>
+      <label class="voice"><span class="sr">Voice</span><select id="voice"></select></label>
+      <button class="icon-btn" id="mute" aria-pressed="false" aria-label="Mute speech" title="Mute speech">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="slash" d="M16 9l5 6M21 9l-5 6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="studio">
+    <section class="stage" aria-label="Camera">
+      <video id="video" playsinline muted></video>
+      <canvas id="overlay"></canvas>
+
+      <div class="live" id="live" hidden><i></i><span id="live-label">Live</span><span class="fps" id="fps"></span></div>
+
+      <div class="captions" aria-live="polite">
+        <p class="caption-line" id="caption"></p>
+      </div>
+
+      <div class="intro" id="intro">
+        <p class="intro-kicker">ASL → captions → voice</p>
+        <h1>Sign it.<br>We'll say it.</h1>
+        <p class="intro-body">Beyond Words watches your hands and turns American Sign Language into live captions and speech. <b>Words</b> recognizes everyday signs like hello, thank you and hungry; <b>Spell</b> lets you fingerspell anything else. Your video never leaves this device.</p>
+        <button class="go" id="start">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 10l5-3v10l-5-3z"/><rect x="3" y="6" width="12" height="12" rx="3"/></svg>
+          Turn on camera
+        </button>
+        <p class="intro-status" id="status" role="status"></p>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel now" aria-label="Current sign">
+        <div class="panel-head">
+          <h2>Reading</h2>
+          <div class="vocab-switch" id="vocab-switch" role="radiogroup" aria-label="Word list">
+            <button role="radio" data-vocab="core" aria-checked="true">Everyday</button>
+            <button role="radio" data-vocab="full" aria-checked="false">All</button>
+          </div>
+          <span class="hint" id="now-hint"></span>
+        </div>
+
+        <div class="now-words" id="now-words">
+          <div class="pulse" id="pulse"><span class="now-word idle" id="now-word">Ready</span></div>
+          <p class="now-meta" id="now-meta">Raise your hands, sign a word, lower them.</p>
+          <div class="alts" id="alts"></div>
+        </div>
+
+        <div class="now-spell" id="now-spell" hidden>
+          <div class="dial" id="dial"><span class="dial-letter" id="letter">—</span></div>
+          <div class="spell-side">
+            <p class="now-meta" id="spell-meta">Hold a letter steady to type it.</p>
+            <ol class="bars" id="bars"></ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel convo" aria-label="Conversation">
+        <div class="panel-head">
+          <h2>Conversation</h2>
+          <div class="convo-tools">
+            <button class="chip-btn listen" id="listen" aria-pressed="false" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+              <span>Listen</span>
+            </button>
+            <button class="chip-btn" id="clear">Clear</button>
+          </div>
+        </div>
+        <ol class="thread" id="thread">
+          <li class="empty" id="empty">What you sign shows up here as a message. Turn on <b>Listen</b> and the other person's spoken replies appear too.</li>
+        </ol>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <span>MediaPipe hand + body tracking → small neural nets trained on <a href="https://huggingface.co/datasets/sign/popsign-images" target="_blank" rel="noopener">PopSign ASL</a> and <a href="https://www.kaggle.com/datasets/grassknoted/asl-alphabet" target="_blank" rel="noopener">ASL Alphabet</a>. Runs entirely in your browser.</span>
+    <a href="https://github.com/bhavyasreepyla/BEYOND-WORDS" target="_blank" rel="noopener">Source</a>
+  </footer>
+
+  <dialog class="vocab" id="vocab">
+    <form method="dialog" class="vocab-head">
+      <h2>Signs it knows</h2>
+      <input type="search" id="vocab-search" placeholder="Search signs" aria-label="Search signs" autocomplete="off">
+      <button class="icon-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </form>
+    <p class="vocab-note">Tap a word to see how it's signed. Anything not on the list, fingerspell in <b>Spell</b> mode.</p>
+    <div class="vocab-grid" id="vocab-grid"></div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
