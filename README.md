@@ -4,6 +4,8 @@
 
 Sign to your webcam and Beyond Words speaks for you. **Words** mode recognizes everyday ASL signs (hello, thank you, please, mom, hungry, tomorrow…): a focused list of 51 by default, or all 250 PopSign signs. **Spell** mode handles anything else through fingerspelling. Each word is captioned and spoken the moment you finish it, and a two-way conversation view transcribes the other person's spoken replies. It runs in the browser with nothing to install, or as a Python desktop app.
 
+**[▶ Try it live](https://bhavyasreepyla.github.io/BEYOND-WORDS/)** in Chrome or Edge with a webcam. Nothing to install, and video stays on your device.
+
 ![Beyond Words in the browser](docs/web-app.png)
 
 ## What it does
@@ -50,6 +52,8 @@ Why word accuracy is lower than letters: the public PopSign frames are sampled a
 ## Run it
 
 ### In the browser
+
+Open the [live demo](https://bhavyasreepyla.github.io/BEYOND-WORDS/), or run it locally:
 
 ```bash
 python scripts/serve.py
